@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Radio24 — Официальный сайт радиостанции</title>
+  <meta name="description" content="Официальный сайт радиостанции Radio24. Прямой эфир, новости, музыка 24/7.">
+  <script src="https://vk.com/js/api/openapi.js?169" type="text/javascript" async></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      /* Светлая тема (по умолчанию) */
+      --blue-primary: #2563eb;
+      --blue-dark: #1e40af;
+      --blue-light: #3b82f6;
+      --red-primary: #dc2626;
+      --red-dark: #b91c1c;
+      --red-light: #ef4444;
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8fafc;
+      --bg-card: #ffffff;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: rgba(37, 99, 235, 0.08);
+      --shadow-lg: rgba(37, 99, 235, 0.15);
+      --gradient-blue: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+      --gradient-red: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      --gradient-mixed: linear-gradient(135deg, #2563eb 0%, #dc2626 100%);
+    }
+
+    [data-theme="dark"] {
+      /* Темная тема с эффектом жидкого стекла */
+      --blue-primary: #3b82f6;
+      --blue-dark: #2563eb;
+      --blue-light: #60a5fa;
+      --red-primary: #ef4444;
+      --red-dark: #dc2626;
+      --red-light: #f87171;
+      --bg-primary: #0a0e1a;
+      --bg-secondary: #141b2d;
+      --bg-card: rgba(30, 41, 59, 0.4);
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --border: rgba(148, 163, 184, 0.2);
+      --shadow: rgba(59, 130, 246, 0.15);
+      --shadow-lg: rgba(59, 130, 246, 0.25);
+      --gradient-blue: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      --gradient-red: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      --gradient-mixed: linear-gradient(135deg, #3b82f6 0%, #ef4444 100%);
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.7;
+      min-height: 100vh;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      overflow-x: hidden;
+    }
+
+    /* Glassmorphism эффект для темной темы */
+    [data-theme="dark"] .glass {
+      background: rgba(30, 41, 59, 0.3);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    [data-theme="dark"] .glass-strong {
+      background: rgba(30, 41, 59, 0.5);
+      backdrop-filter: blur(30px) saturate(200%);
+      -webkit-backdrop-filter: blur(30px) saturate(200%);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header */
+    header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px var(--shadow);
+      transition: all 0.3s ease;
+    }
+
+    [data-theme="dark"] header {
+      background: rgba(30, 41, 59, 0.4);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .logo-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--gradient-mixed);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      font-weight: 700;
+      color: white;
+      box-shadow: 0 4px 15px var(--shadow);
+    }
+
+    .logo-text h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 3px;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-text p {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    /* Auth Button */
+    .auth-btn {
+      padding: 11px 22px;
+      background: var(--gradient-blue);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 3px 12px var(--shadow);
+      transition: all 0.2s ease;
+      text-decoration: none;
+      letter-spacing: 0.3px;
+    }
+
+    .auth-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 18px var(--shadow-lg);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px;
+      background: var(--bg-secondary);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    [data-theme="dark"] .user-info {
+      background: rgba(30, 41, 59, 0.4);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+    }
+
+    .user-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--gradient-mixed);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    .user-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 14px;
+    }
+
+    .logout-btn {
+      padding: 6px 14px;
+      background: var(--red-primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 500;
+    }
+
+    .logout-btn:hover {
+      background: var(--red-dark);
+    }
+
+    /* Theme Toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-secondary);
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    [data-theme="dark"] .theme-toggle {
+      background: rgba(30, 41, 59, 0.4);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+    }
+
+    .theme-toggle:hover {
+      background: var(--bg-card);
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+
+    .theme-text {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 80px 0 60px;
+      text-align: center;
+      background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    }
+
+    .hero h2 {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--text-primary);
+      letter-spacing: -1px;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: var(--text-secondary);
+      margin-bottom: 40px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.8;
+    }
+
+    /* Player Section */
+    .player-section {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 45px;
+      box-shadow: 0 10px 40px var(--shadow-lg);
+      border: 1px solid var(--border);
+      margin-bottom: 60px;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+      transition: all 0.3s ease;
+    }
+
+    [data-theme="dark"] .player-section {
+      background: rgba(30, 41, 59, 0.4);
+      backdrop-filter: blur(30px) saturate(200%);
+      -webkit-backdrop-filter: blur(30px) saturate(200%);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      box-shadow: 0 12px 50px rgba(0, 0, 0, 0.4);
+    }
+
+    .player-header {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .player-header h3 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .player-header p {
+      color: var(--text-muted);
+      font-size: 16px;
+    }
+
+    .current-track {
+      background: var(--bg-secondary);
+      padding: 25px;
+      border-radius: 16px;
+      margin-bottom: 30px;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+
+    [data-theme="dark"] .current-track {
+      background: rgba(20, 27, 45, 0.5);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+    }
+
+    .track-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .track-info {
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    .player-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+
+    .play-btn {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: none;
+      background: var(--gradient-mixed);
+      color: white;
+      font-size: 32px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 25px var(--shadow-lg);
+      transition: all 0.2s ease;
+    }
+
+    .play-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 30px var(--shadow-lg);
+    }
+
+    .play-btn:active {
+      transform: scale(0.98);
+    }
+
+    .play-btn.playing {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 6px 25px var(--shadow-lg);
+      }
+      50% {
+        box-shadow: 0 6px 30px var(--shadow-lg), 0 0 0 8px rgba(37, 99, 235, 0.1);
+      }
+    }
+
+    .volume-control {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex: 1;
+      max-width: 350px;
+      background: var(--bg-secondary);
+      padding: 15px 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    [data-theme="dark"] .volume-control {
+      background: rgba(20, 27, 45, 0.5);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+    }
+
+    .volume-slider {
+      flex: 1;
+      height: 6px;
+      background: var(--bg-primary);
+      border-radius: 3px;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+    }
+
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: var(--gradient-mixed);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px var(--shadow);
+    }
+
+    .volume-slider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      background: var(--gradient-mixed);
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px var(--shadow);
+    }
+
+    .volume-value {
+      font-size: 14px;
+      color: var(--text-secondary);
+      min-width: 42px;
+      text-align: right;
+      font-weight: 600;
+    }
+
+    .progress-container {
+      margin-top: 25px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-secondary);
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: pointer;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--gradient-mixed);
+      width: 0%;
+      transition: width 0.1s ease;
+    }
+
+    .time-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Content Section */
+    .content-section {
+      margin-bottom: 60px;
+    }
+
+    .content-section h3 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 25px;
+      color: var(--text-primary);
+      text-align: center;
+    }
+
+    .content-text {
+      max-width: 800px;
+      margin: 0 auto;
+      color: var(--text-secondary);
+      font-size: 16px;
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+
+    .content-text p {
+      margin-bottom: 20px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-top: 40px;
+    }
+
+    .info-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 35px;
+      box-shadow: 0 4px 20px var(--shadow);
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    [data-theme="dark"] .info-card {
+      background: rgba(30, 41, 59, 0.4);
+      backdrop-filter: blur(30px) saturate(200%);
+      -webkit-backdrop-filter: blur(30px) saturate(200%);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .info-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px var(--shadow-lg);
+    }
+
+    .info-card h4 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: var(--text-primary);
+    }
+
+    .info-card p {
+      color: var(--text-secondary);
+      font-size: 15px;
+      line-height: 1.8;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+      padding: 50px 0;
+      text-align: center;
+      margin-top: 80px;
+    }
+
+    [data-theme="dark"] footer {
+      background: rgba(20, 27, 45, 0.5);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-top: 1px solid rgba(148, 163, 184, 0.15);
+    }
+
+    footer p {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 10px;
+      line-height: 1.8;
+    }
+
+    footer a {
+      color: var(--blue-primary);
+      text-decoration: none;
+      transition: color 0.2s ease;
+      font-weight: 500;
+    }
+
+    footer a:hover {
+      color: var(--red-primary);
+      text-decoration: underline;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 450px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      animation: slideUp 0.3s ease;
+      position: relative;
+    }
+
+    [data-theme="dark"] .modal-content {
+      background: rgba(30, 41, 59, 0.6);
+      backdrop-filter: blur(30px) saturate(200%);
+      -webkit-backdrop-filter: blur(30px) saturate(200%);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .modal-header h3 {
+      font-size: 26px;
+      margin-bottom: 10px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .modal-header p {
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .vk-btn {
+      width: 100%;
+      padding: 16px;
+      background: #0077ff;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(0, 119, 255, 0.3);
+      letter-spacing: 0.3px;
+    }
+
+    .vk-btn:hover {
+      background: #0051cc;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 119, 255, 0.4);
+    }
+
+    .vk-btn:active {
+      transform: translateY(0);
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: var(--bg-secondary);
+      border: none;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 20px;
+      color: var(--text-secondary);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .close-modal:hover {
+      background: var(--red-primary);
+      color: white;
+      transform: rotate(90deg);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero h2 {
+        font-size: 36px;
+      }
+
+      .hero p {
+        font-size: 16px;
+      }
+
+      .player-section {
+        padding: 30px 20px;
+      }
+
+      .play-btn {
+        width: 70px;
+        height: 70px;
+        font-size: 28px;
+      }
+
+      .header-content {
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Hidden audio */
+    #audioPlayer {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+  <div class="container">
+      <div class="header-content">
+        <a href="#" class="logo">
+          <div class="logo-icon">24</div>
+          <div class="logo-text">
+            <h1>Radio24</h1>
+            <p>Официальный сайт радиостанции</p>
+          </div>
+        </a>
+        <div class="header-actions">
+          <div id="authSection">
+            <button class="auth-btn" id="loginBtn">
+              Войти через ВКонтакте
+            </button>
+          </div>
+          <div class="theme-toggle" id="themeToggle">
+            <span class="theme-text" id="themeText">Темная</span>
+          </div>
+        </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+    <section class="hero">
+      <div class="container">
+        <h2>Добро пожаловать на Radio24</h2>
+        <p>Официальный сайт радиостанции Radio24. Мы вещаем круглосуточно, предлагая нашим слушателям качественный контент, актуальные новости, лучшую музыку и развлекательные программы. Присоединяйтесь к тысячам слушателей, которые ежедневно выбирают Radio24.</p>
+      </div>
+    </section>
+
+    <div class="container">
+      <section class="player-section glass-strong">
+        <div class="player-header">
+          <h3>Прямой эфир</h3>
+          <p>Слушайте Radio24 онлайн прямо сейчас</p>
+        </div>
+
+        <div class="current-track glass">
+          <div class="track-title" id="currentTrack">Radio24 — Прямой эфир</div>
+          <div class="track-info" id="currentProgram">Сейчас в эфире: Прямая трансляция</div>
+          </div>
+
+        <div class="player-controls">
+          <button class="play-btn" id="playBtn">
+            <span id="playIcon">▶</span>
+          </button>
+          <div class="volume-control glass">
+            <span style="font-size: 18px; color: var(--text-secondary);">Громкость</span>
+            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="70">
+            <span class="volume-value" id="volumeValue">70%</span>
+          </div>
+        </div>
+
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="time-info">
+            <span id="currentTime">00:00</span>
+            <span id="totalTime">LIVE</span>
+          </div>
+        </div>
+
+        <audio id="audioPlayer" preload="none">
+          <!-- Замените на URL вашего радио-потока -->
+          <source src="https://stream.example.com/radio24" type="audio/mpeg">
+          Ваш браузер не поддерживает аудио элемент.
+        </audio>
+      </section>
+
+      <section class="content-section">
+        <h3>О радиостанции</h3>
+        <div class="content-text">
+          <p>Radio24 — это современная радиостанция, которая начала свое вещание в 2020 году и с тех пор завоевала доверие миллионов слушателей по всей стране. Наша миссия — предоставлять качественный радиоэфир, который объединяет людей, информирует и развлекает.</p>
+          
+          <p>Мы вещаем 24 часа в сутки, 7 дней в неделю, предлагая разнообразный контент для всех возрастных групп. Наша команда состоит из профессиональных диджеев, журналистов и технических специалистов, которые работают над тем, чтобы каждый эфир был интересным и качественным.</p>
+
+          <p>Radio24 активно развивается в цифровом пространстве. Помимо традиционного FM-вещания, мы предоставляем возможность слушать наш эфир онлайн через официальный сайт и мобильные приложения. Это позволяет нашим слушателям оставаться на связи с Radio24 в любое время и в любом месте.</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-card glass">
+            <h4>Наша миссия</h4>
+            <p>Предоставлять качественный радиоэфир, который объединяет людей, информирует и развлекает. Мы стремимся быть голосом нашего города и региона, отражая интересы и потребности наших слушателей.</p>
+            </div>
+
+          <div class="info-card glass">
+            <h4>Качество звука</h4>
+            <p>Мы используем современное оборудование и технологии для обеспечения высокого качества звучания. Наш технический отдел постоянно работает над улучшением качества трансляции и расширением зоны покрытия.</p>
+            </div>
+
+          <div class="info-card glass">
+            <h4>Актуальный контент</h4>
+            <p>Наша редакция ежедневно готовит актуальные новости, интересные интервью и развлекательные программы. Мы следим за последними тенденциями в мире музыки и развлечений, чтобы предложить нашим слушателям только лучшее.</p>
+              </div>
+            </div>
+      </section>
+
+      <section class="content-section">
+        <h3>Преимущества Radio24</h3>
+        <div class="content-text">
+          <p>Выбирая Radio24, вы получаете доступ к множеству преимуществ. Мы предлагаем круглосуточное вещание без перерывов и рекламных пауз в музыкальных блоках. Наша команда тщательно отбирает музыкальный контент, чтобы каждый слушатель мог найти что-то по своему вкусу.</p>
+
+          <p>Мы активно взаимодействуем с нашими слушателями через социальные сети и официальный сайт. Вы можете оставить отзыв, предложить песню или задать вопрос нашим диджеям. Мы ценим обратную связь и всегда готовы к диалогу с аудиторией.</p>
+
+          <p>Radio24 также предоставляет возможность рекламодателям донести информацию о своих товарах и услугах до широкой аудитории. Наша рекламная служба поможет разработать эффективную стратегию продвижения с учетом специфики радиоэфира.</p>
+              </div>
+      </section>
+        </div>
+    </main>
+
+  <footer class="glass">
+    <div class="container">
+      <p>© 2024 Radio24. Все права защищены.</p>
+      <p>Официальный сайт радиостанции Radio24. Прямой эфир, новости, музыка 24/7.</p>
+      <p>
+        <a href="mailto:info@radio24.ru">info@radio24.ru</a> | 
+        <a href="tel:+78005552424">+7 (800) 555-24-24</a>
+      </p>
+    </div>
+    </footer>
+
+  <!-- Modal для входа -->
+  <div class="modal" id="authModal">
+    <div class="modal-content glass-strong">
+      <button class="close-modal" id="closeModal">×</button>
+      <div class="modal-header">
+        <h3>Вход в аккаунт</h3>
+        <p>Войдите через ВКонтакте для доступа к дополнительным функциям и персонализированному контенту</p>
+      </div>
+      <button class="vk-btn" id="vkLoginBtn">
+        <span>Войти через ВКонтакте</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // VK API инициализация
+    const VK_APP_ID = '54346284'; // App ID из адреса app54346284
+    const VK_SECRET_KEY = 'ivtEJfhp4m1kXSiXCHn6'; // Защищенный ключ (используется на сервере)
+
+    // Функция инициализации VK API
+    function initVK() {
+      if (typeof VK !== 'undefined') {
+        VK.init({
+          apiId: VK_APP_ID
+        }, function() {
+          console.log('VK API инициализирован');
+          // Проверка существующей сессии после инициализации
+          checkVKSession();
+        }, function(error) {
+          console.error('Ошибка инициализации VK API:', error);
+          
+          // Если ошибка связана с доменом, показываем инструкции
+          if (error && (error.error === 'invalid_request' || (error.error_description && error.error_description.includes('domain')))) {
+            const currentDomain = window.location.hostname || 'localhost';
+            console.warn('Требуется настройка домена в VK приложении. Текущий домен:', currentDomain);
+          }
+        });
+      } else {
+        // Повторная попытка через небольшую задержку (максимум 5 секунд)
+        let attempts = 0;
+        const maxAttempts = 50; // 5 секунд
+        const checkInterval = setInterval(() => {
+          attempts++;
+          if (typeof VK !== 'undefined') {
+            clearInterval(checkInterval);
+            initVK();
+          } else if (attempts >= maxAttempts) {
+            clearInterval(checkInterval);
+            console.error('VK API не загрузился за отведенное время');
+          }
+        }, 100);
+      }
+    }
+
+    // Инициализация при загрузке
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initVK);
+    } else {
+      initVK();
+    }
+
+    // Theme Toggle
+    const themeToggle = document.getElementById('themeToggle');
+    const themeText = document.getElementById('themeText');
+    const html = document.documentElement;
+
+    const savedTheme = localStorage.getItem('radio24-theme') || 'light';
+    if (savedTheme === 'dark') {
+      html.setAttribute('data-theme', 'dark');
+      themeText.textContent = 'Светлая';
+    } else {
+      html.setAttribute('data-theme', 'light');
+      themeText.textContent = 'Темная';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = html.getAttribute('data-theme');
+      if (currentTheme === 'dark') {
+        html.setAttribute('data-theme', 'light');
+        localStorage.setItem('radio24-theme', 'light');
+        themeText.textContent = 'Темная';
+      } else {
+        html.setAttribute('data-theme', 'dark');
+        localStorage.setItem('radio24-theme', 'dark');
+        themeText.textContent = 'Светлая';
+      }
+    });
+
+    // Auth Modal
+    const loginBtn = document.getElementById('loginBtn');
+    const authModal = document.getElementById('authModal');
+    const closeModal = document.getElementById('closeModal');
+    const vkLoginBtn = document.getElementById('vkLoginBtn');
+    const authSection = document.getElementById('authSection');
+
+    let isLoggedIn = localStorage.getItem('radio24-logged-in') === 'true';
+    let userData = JSON.parse(localStorage.getItem('radio24-user') || '{}');
+
+    function updateAuthUI() {
+      if (isLoggedIn && userData.name) {
+        authSection.innerHTML = `
+          <div class="user-info glass">
+            <div class="user-avatar">${userData.name.charAt(0).toUpperCase()}</div>
+            <div class="user-name">${userData.name}</div>
+            <button class="logout-btn" id="logoutBtn">Выйти</button>
+          </div>
+        `;
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+      } else {
+        authSection.innerHTML = `
+          <button class="auth-btn" id="loginBtn">
+            Войти через ВКонтакте
+          </button>
+        `;
+        document.getElementById('loginBtn').addEventListener('click', () => {
+          authModal.classList.add('active');
+        });
+      }
+    }
+
+    function logout() {
+      if (typeof VK !== 'undefined') {
+        VK.Auth.logout();
+      }
+      isLoggedIn = false;
+      userData = {};
+      localStorage.removeItem('radio24-logged-in');
+      localStorage.removeItem('radio24-user');
+      updateAuthUI();
+    }
+
+    loginBtn?.addEventListener('click', () => {
+      authModal.classList.add('active');
+    });
+
+    closeModal.addEventListener('click', () => {
+      authModal.classList.remove('active');
+    });
+
+    authModal.addEventListener('click', (e) => {
+      if (e.target === authModal) {
+        authModal.classList.remove('active');
+      }
+    });
+
+    // VK Login
+    vkLoginBtn.addEventListener('click', () => {
+      if (typeof VK !== 'undefined' && VK.Auth) {
+        // Закрываем модальное окно перед открытием окна VK
+        authModal.classList.remove('active');
+        
+        // Запрашиваем права доступа: email, friends, offline
+        VK.Auth.login(function(response) {
+          console.log('VK Auth response:', response);
+          
+          if (response.session) {
+            // Получаем информацию о пользователе
+            VK.Api.call('users.get', {
+              fields: 'photo_100'
+            }, function(r) {
+              console.log('VK API users.get response:', r);
+              
+              if (r && r.response && r.response[0]) {
+                const user = r.response[0];
+                userData = {
+                  id: user.id,
+                  name: user.first_name + ' ' + user.last_name,
+                  photo: user.photo_100
+                };
+                
+                isLoggedIn = true;
+                localStorage.setItem('radio24-logged-in', 'true');
+                localStorage.setItem('radio24-user', JSON.stringify(userData));
+                
+                updateAuthUI();
+                
+                alert('Вы успешно вошли через ВКонтакте!');
+              } else {
+                console.error('Ошибка получения данных пользователя:', r);
+                alert('Не удалось получить данные пользователя. Попробуйте еще раз.');
+              }
+            });
+          } else if (response.error) {
+            // Обработка ошибок VK API
+            console.error('VK Auth error:', response.error);
+            
+            if (response.error === 'invalid_request' || response.error_description && response.error_description.includes('domain')) {
+              const currentDomain = window.location.hostname || 'localhost';
+              const errorMessage = `Ошибка настройки домена VK API.\n\n` +
+                `Текущий домен: ${currentDomain}\n\n` +
+                `Для исправления:\n` +
+                `1. Перейдите в настройки приложения VK: https://vk.com/apps?act=manage\n` +
+                `2. Выберите ваше приложение (ID: 54346284)\n` +
+                `3. В разделе "Настройки" найдите "Доверенный redirect URI"\n` +
+                `4. Добавьте домен: ${currentDomain === 'localhost' ? 'http://localhost' : 'https://' + currentDomain}\n` +
+                `5. Сохраните изменения\n\n` +
+                `Для локальной разработки добавьте: http://localhost или http://127.0.0.1`;
+              
+              alert(errorMessage);
+            } else if (response.error === 'access_denied') {
+              // Пользователь отменил авторизацию
+              console.log('Пользователь отменил авторизацию');
+            } else {
+              alert('Ошибка авторизации: ' + (response.error_description || response.error || 'Неизвестная ошибка'));
+            }
+          } else {
+            console.error('Неизвестная ошибка авторизации:', response);
+            alert('Ошибка авторизации. Попробуйте еще раз.');
+          }
+        }, 0); // 0 - базовые права, можно указать другие: 2 (email), 4 (friends) и т.д.
+      } else {
+        console.error('VK API не загружен');
+        alert('VK API не загружен. Проверьте подключение к интернету и обновите страницу.');
+      }
+    });
+
+    // Функция проверки существующей сессии VK
+    function checkVKSession() {
+      if (typeof VK !== 'undefined' && VK.Auth) {
+        VK.Auth.getLoginStatus(function(response) {
+          console.log('VK Auth status:', response);
+          
+          if (response.session) {
+            VK.Api.call('users.get', {
+              fields: 'photo_100'
+            }, function(r) {
+              if (r && r.response && r.response[0]) {
+                const user = r.response[0];
+                userData = {
+                  id: user.id,
+                  name: user.first_name + ' ' + user.last_name,
+                  photo: user.photo_100
+                };
+                
+                isLoggedIn = true;
+                localStorage.setItem('radio24-logged-in', 'true');
+                localStorage.setItem('radio24-user', JSON.stringify(userData));
+                updateAuthUI();
+              }
+            });
+          }
+        });
+      }
+    }
+
+    updateAuthUI();
+
+    // Audio Player
+    const audioPlayer = document.getElementById('audioPlayer');
+    const playBtn = document.getElementById('playBtn');
+    const playIcon = document.getElementById('playIcon');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const volumeValue = document.getElementById('volumeValue');
+    const progressFill = document.getElementById('progressFill');
+
+      let isPlaying = false;
+
+    audioPlayer.volume = volumeSlider.value / 100;
+    volumeSlider.addEventListener('input', (e) => {
+      const volume = e.target.value;
+      audioPlayer.volume = volume / 100;
+      volumeValue.textContent = volume + '%';
+    });
+
+    playBtn.addEventListener('click', async () => {
+      try {
+        if (!isPlaying) {
+          await audioPlayer.play();
+            isPlaying = true;
+          playIcon.textContent = '⏸';
+          playBtn.classList.add('playing');
+          } else {
+          audioPlayer.pause();
+            isPlaying = false;
+          playIcon.textContent = '▶';
+          playBtn.classList.remove('playing');
+        }
+      } catch (error) {
+        console.error('Ошибка воспроизведения:', error);
+        alert('Не удалось воспроизвести поток. Убедитесь, что URL потока указан правильно в коде.');
+      }
+    });
+
+    setInterval(() => {
+      if (isPlaying) {
+        const progress = Math.random() * 100;
+        progressFill.style.width = progress + '%';
+      } else {
+        progressFill.style.width = '0%';
+      }
+    }, 100);
+
+    audioPlayer.addEventListener('play', () => {
+      isPlaying = true;
+      playIcon.textContent = '⏸';
+      playBtn.classList.add('playing');
+    });
+
+    audioPlayer.addEventListener('pause', () => {
+      isPlaying = false;
+      playIcon.textContent = '▶';
+      playBtn.classList.remove('playing');
+    });
+
+    audioPlayer.addEventListener('error', (e) => {
+      console.warn('Ошибка загрузки аудио:', e);
+    });
+  </script>
+</body>
+</html>
